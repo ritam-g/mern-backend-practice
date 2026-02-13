@@ -3,7 +3,7 @@ const userModel = require("../model/user.model")
 
 async function registerController(req, res) {
     const { username, email } = req.body
-
+    
     //NOTE - checks
     const user = await userModel.findOne({
         $or: [
