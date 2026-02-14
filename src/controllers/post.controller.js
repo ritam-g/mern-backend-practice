@@ -58,9 +58,44 @@ async function getPostController(req, res) {
         });
     }
 }
-async function patchPostController(req,res) {
-    
+async function patchPostController(req, res) {
+    try {
+        const { caption } = req.body;
+        const file = req.file;
+        const postId = req.params.id;
+        const {id}=req.cookies.token
+
+       
+        const post = await postModel.findOne({ _id: postId })
+        //! post is not ther  
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found"
+            });
+        }
+
+        //! now check one by one and update 
+        if (caption) post.caption = caption
+        if (file) {
+            const file = await imagekit.files.upload({
+                file: req.file.buffer.toString("base64"),//sending file bugger to inmage kit 
+                fileName: 'Experement',
+            });
+            post.imgUrl = file.url//! url is set now 
+        }
+
+        await post.save()
+
+        return res.status(200).json({
+            message: "Post updated successfully",
+            post
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
 }
 
 
-module.exports = { postController, getPostController,patchPostController }
+module.exports = { postController, getPostController, patchPostController }

@@ -9,5 +9,5 @@ const upload = multer({ storage: storage })
 
 postRoute.post('/',upload.single('image'),postController)//! now express can red the form-data file  
 postRoute.get('/',getPostController)
-postRoute.patch('/:id',patchPostController)
+postRoute.patch('/:id',upload.single('image'),patchPostController)
 module.exports=postRoute
