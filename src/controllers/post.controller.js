@@ -20,17 +20,47 @@ async function postController(req, res) {
 
     if (!user) return res.status(409).json({ message: 'unothorize user' })
 
-   const file= await imagekit.files.upload({
+    const file = await imagekit.files.upload({
         file: req.file.buffer.toString("base64"),//sending file bugger to inmage kit 
         fileName: 'Experement',
     });
     const post = await postModel.create({
-        caption, imgUrl:file.url, user: user._id//! now creting data in db 
+        caption, imgUrl: file.url, user: user._id//! now creting data in db 
     })
     return res.status(201).json({
-        message:'post is created',
+        message: 'post is created',
         post
     })
 }
+async function getPostController(req, res) {
+    try {
+        const token = req.cookies?.token;
 
-module.exports = postController
+        if (!token) {
+            return res.status(401).json({
+                message: "Please login first"
+            });
+        }
+
+        const { id } = jwt.verify(token, process.env.SEC);
+
+        const posts = await postModel.find({ user: id })
+
+        return res.status(200).json({
+            message: "Posts fetched successfully",
+            count: posts.length,
+            posts
+        });
+
+    } catch (error) {
+        return res.status(401).json({
+            message: "Invalid or expired token"
+        });
+    }
+}
+async function patchPostController(req,res) {
+    
+}
+
+
+module.exports = { postController, getPostController,patchPostController }
