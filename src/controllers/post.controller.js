@@ -1,5 +1,5 @@
 const postModel = require("../model/post.model")
-const jwt = require("jsonwebtoken")
+
 const userModel = require("../model/user.model")
 const ImageKit = require('@imagekit/nodejs');
 
@@ -13,8 +13,8 @@ async function postController(req, res) {
     const { caption } = req.body
 
     //! tekn taken 
-    const token = req.cookies.token
-    const { id } = jwt.verify(token, process.env.SEC)//! verifying 
+
+    const { id } = req.user
 
     const user = await userModel.findOne({ _id: id })
 
@@ -34,17 +34,7 @@ async function postController(req, res) {
 }
 async function getPostController(req, res) {
     try {
-        const token = req.cookies?.token;
-
-        if (!token) {
-            return res.status(401).json({
-                message: "Please login first"
-            });
-        }
-
-        const { id } = jwt.verify(token, process.env.SEC);
-
-        const posts = await postModel.find({ user: id })
+        const posts = await postModel.find({ user: req.user.id })
 
         return res.status(200).json({
             message: "Posts fetched successfully",
@@ -63,9 +53,9 @@ async function patchPostController(req, res) {
         const { caption } = req.body;
         const file = req.file;
         const postId = req.params.id;
-        const {id}=req.cookies.token
+        const { id } = req.user
 
-       
+
         const post = await postModel.findOne({ _id: postId })
         //! post is not ther  
         if (!post) {
