@@ -14,7 +14,7 @@ async function registerController(req, res) {
         message: 'user already exieste'
     })}
     const createdUser = await userModel.create({ username, email })
-    const token = jwt.sign({ id: createdUser._id, email: createdUser.email }, process.env.SEC)
+    const token = jwt.sign({ id: createdUser._id, email: createdUser.email,username:username }, process.env.SEC)
 
     res.cookie('token',token)
 
@@ -32,7 +32,7 @@ async function loginController(req,res) {
     if(!user){return res.status(401).json({
         message:'no user found'
     })}
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.SEC)
+    const token = jwt.sign({ id: user._id, email: user.email ,username:username}, process.env.SEC)
     res.cookie('token',token)
     return res.status(200).json({
         message:'welcome back'

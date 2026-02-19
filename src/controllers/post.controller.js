@@ -1,3 +1,5 @@
+const { json } = require("express");
+const likeModel = require("../model/like.model");
 const postModel = require("../model/post.model")
 
 const userModel = require("../model/user.model")
@@ -89,24 +91,98 @@ async function patchPostController(req, res) {
 
 async function getSinglePost(req, res) {
     try {
-        console.log('hit');
-        
+
+
         const user = await userModel.findById(req.user.id)
         if (!user) return res.status(401).json({ message: "unauthorized user" })
         const post = await postModel.findById(req.params.postid)
         if (!post) return res.status(401).json({ message: "post not found" })
 
         return res.status(200).json({
-            message:'post is found',statusbar:'sucess',post
+            message: 'post is found', statusbar: 'sucess', post
         })
     } catch (err) {
-        console.log(err.message,err);
-        
+        console.log(err.message, err);
+
         return res.status(404).json({
-            message:'something went wrong '
+            message: 'something went wrong '
         })
+    }
+}
+async function likePostController(req, res) {
+    try {
+        const user = await userModel.findById(req.user.id);
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized user" });
+        }
+
+        const post = await postModel.findById(req.params.postid);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Check if already liked
+        const alreadyLiked = await likeModel.findOne({
+            post: req.params.postid,
+            username: req.user.username
+        });
+
+        if (alreadyLiked) {
+            return res.status(400).json({
+                message: "You already liked this post"
+            });
+        }
+
+        const likePost = await likeModel.create({
+            post: req.params.postid,
+            username: req.user.username
+        });
+
+        return res.status(201).json({
+            message: 'You successfully liked the post',
+            likePost
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Something went wrong'
+        });
+    }
+}
+
+async function unlikePostController(req, res) {
+    try {
+        const postId = req.params.postid;
+        const username = req.user.username;
+
+        const likePost = await likeModel.findOne({
+            post: postId,
+            username: username
+        });
+
+        if (!likePost) {
+            return res.status(400).json({
+                message: 'Please like the post first'
+            });
+        }
+
+        await likeModel.findOneAndDelete({
+            post: postId,
+            username: username
+        });
+
+        return res.status(200).json({
+            message: 'You unliked the post'
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: "Something went wrong"
+        });
     }
 }
 
 
-module.exports = { postController, getPostController, patchPostController ,getSinglePost}
+module.exports = { unlikePostController, likePostController, postController, getPostController, patchPostController, getSinglePost }

@@ -1,5 +1,5 @@
 const express = require("express");
-const {postController, getPostController, patchPostController, getSinglePost} = require("../controllers/post.controller");
+const {postController, getPostController, patchPostController, getSinglePost, likePostController, unlikePostController} = require("../controllers/post.controller");
 const multer  = require('multer');
 const userVerificaiton = require("../middlewares/auth.middleware");
 
@@ -17,4 +17,12 @@ postRoute.patch('/:id',upload.single('image'),userVerificaiton,patchPostControll
 
 /**singl post  */
 postRoute.get('/:postid',userVerificaiton,getSinglePost)
+
+/**like feture  */
+postRoute.post('/like/:postid',userVerificaiton,likePostController)
+
+/**unlike feture  */
+
+postRoute.patch('/unlike/:postid',userVerificaiton,unlikePostController)
+
 module.exports=postRoute
