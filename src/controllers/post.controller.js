@@ -87,5 +87,26 @@ async function patchPostController(req, res) {
     }
 }
 
+async function getSinglePost(req, res) {
+    try {
+        console.log('hit');
+        
+        const user = await userModel.findById(req.user.id)
+        if (!user) return res.status(401).json({ message: "unauthorized user" })
+        const post = await postModel.findById(req.params.postid)
+        if (!post) return res.status(401).json({ message: "post not found" })
 
-module.exports = { postController, getPostController, patchPostController }
+        return res.status(200).json({
+            message:'post is found',statusbar:'sucess',post
+        })
+    } catch (err) {
+        console.log(err.message,err);
+        
+        return res.status(404).json({
+            message:'something went wrong '
+        })
+    }
+}
+
+
+module.exports = { postController, getPostController, patchPostController ,getSinglePost}
