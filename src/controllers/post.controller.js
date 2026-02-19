@@ -1,4 +1,4 @@
-const { json } = require("express");
+
 const likeModel = require("../model/like.model");
 const postModel = require("../model/post.model")
 

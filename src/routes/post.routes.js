@@ -25,4 +25,7 @@ postRoute.post('/like/:postid',userVerificaiton,likePostController)
 
 postRoute.patch('/unlike/:postid',userVerificaiton,unlikePostController)
 
+/**follow model it wil take folower and follwee */
+/** follwer will from toekn follwe will be userid  */
+
 module.exports=postRoute
