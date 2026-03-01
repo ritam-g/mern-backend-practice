@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const redis = require("../config/cache");
 /**
- * 
+ * @access evryone
  * 
  */
 async function registerController(req, res) {
