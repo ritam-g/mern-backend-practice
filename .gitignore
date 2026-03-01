@@ -1,2 +1,8 @@
 node_modules
 .env
+
+# Copilot Orchestrator temporary files
+.orchestrator/
+.worktrees/
+.copilot-cli/
+.github/instructions/orchestrator-*.instructions.md

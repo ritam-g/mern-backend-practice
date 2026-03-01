@@ -1,0 +1,104 @@
+const userModel = require("../model/user.model");
+const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+const redis = require("../config/cache");
+/**
+ * 
+ * 
+ */
+async function registerController(req, res) {
+    try {
+        const { email, username, password } = req.body;
+
+        // Check if user already exists
+        const userExist = await userModel.findOne({
+            $or: [{ email }, { username }],
+        });
+
+        if (userExist) {
+            return res.status(409).json({
+                message: "User already exists",
+            });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+
+        // Create user
+        const user = await userModel.create({
+            username,
+            email,
+            password: hashPassword,
+        });
+
+        return res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                username: user.username,
+                email: user.email,
+            },
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Something went wrong",
+        });
+    }
+}
+/**
+ * 
+ * 
+ */
+async function loginController(req, res) {
+    try {
+        const { email, username, password } = req.body;
+        const user = await userModel.findOne({
+            $or: [{ email }, { username }]
+        }).select("+password")
+
+        if (!user) {
+            return res.status(401).json({
+                message: 'unathorize user'
+            })
+        }
+        //NOTE - password verificaiton
+        const match = await bcrypt.compare(password, user.password)
+        if (!match) {
+            return res.status(401).json({
+                message: 'invalid input'
+            })
+        }
+        //NOTE - token created
+        const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY)
+        res.cookie('token', token)
+        return res.status(200).json({
+            message: 'loing in sucess',
+        })
+    } catch (err) {
+        console.log(err);
+        if (!user) {
+            return res.status(401).json({
+                message: 'something went worng '
+            })
+        }
+    }
+}
+/**
+ * 
+ * 
+ */
+async function logoutController(req,res) {
+
+    try {
+        const {token}=req.cookies
+        await redis.set(token,Date.now().toString())
+        return res.status(201).json({
+            message:"logout sucessfully"
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+module.exports = {logoutController, registerController, loginController };
