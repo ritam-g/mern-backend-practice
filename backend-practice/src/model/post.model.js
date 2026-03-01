@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const postSchema=await mongoose.Schema({
+const postSchema=new mongoose.Schema({
     img:{
         type:String,
         required:true,
