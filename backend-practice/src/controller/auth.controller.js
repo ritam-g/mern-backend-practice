@@ -64,12 +64,14 @@ async function loginController(req, res) {
             })
         }
         //NOTE - password verificaiton
+        
         const match = await bcrypt.compare(password, user.password)
         if (!match) {
             return res.status(401).json({
                 message: 'invalid input'
             })
         }
+        
         //NOTE - token created
         const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY)
         res.cookie('token', token)
@@ -89,16 +91,40 @@ async function loginController(req, res) {
  * 
  * 
  */
-async function logoutController(req,res) {
+async function logoutController(req, res) {
 
     try {
-        const {token}=req.cookies
-        await redis.set(token,Date.now().toString())
+        const { token } = req.cookies
+        await redis.set(token, Date.now().toString())
         return res.status(201).json({
-            message:"logout sucessfully"
+            message: "logout sucessfully"
         })
     } catch (err) {
         console.log(err);
     }
 }
-module.exports = {logoutController, registerController, loginController };
+/**
+ * 
+ * 
+ */
+async function getMeController(req, res) {
+    try {
+        const {id} = req.user
+        const user = await userModel.findById(id)
+        if (!user) {
+            return res.status(401).json({
+                message: 'no user found'
+            })
+        }
+        return res.status(200).json({
+            message: 'your details',
+            user
+        })
+    } catch (err) {
+        console.log(err);
+        return res.status(404).json({
+            message: 'something went wrong'
+        })
+    }
+}
+module.exports = {getMeController, logoutController, registerController, loginController };
