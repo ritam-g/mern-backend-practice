@@ -3,6 +3,7 @@ const authRoute = require('./routes/auth.route');
 const cookieParser=require("cookie-parser");
 const postRoute = require('./routes/post.route');
 const songRoute = require('./routes/song.route');
+const handelErr = require('./middleware/err.middleware');
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
@@ -17,4 +18,6 @@ app.use('/api/auth',authRoute)
 app.use('/api/post',postRoute)
 app.use('/api/song',songRoute)
 
+
+app.use(handelErr)
 module.exports = app
