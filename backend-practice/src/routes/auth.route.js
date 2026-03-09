@@ -2,7 +2,8 @@ const express = require('express');
 const { registerController, loginController, logoutController, getMeController } = require('../controller/auth.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 const testingError = require('../controller/checks.controller');
-const { body, validationResult } = require('express-validator')
+const { body, validationResult } = require('express-validator');
+const practiceConteroller = require('../controller/practice.controller');
 const authRoute = express.Router()
 
 
@@ -30,4 +31,5 @@ authRoute.post(
     ],
     testingError
 )
+authRoute.post('/',practiceConteroller)
 module.exports = authRoute
