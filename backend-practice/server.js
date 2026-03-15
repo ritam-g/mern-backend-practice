@@ -3,6 +3,7 @@ const { Server } = require('socket.io');
 const app = require("./src/app");
 const connectToDB = require("./src/config/db");
 const { createServer } = require("http")
+const { tavily } = require("@tavily/core");
 connectToDB()
 
 const httpServer = createServer(app)
@@ -17,8 +18,16 @@ io.on("connection", (socket) => {
     })
 
 })
+// tesing tavily sdk
+async function call() {
 
-httpServer.listen(3000,()=>{
+
+    const tvly = tavily({ apiKey: process.env.tavily_api_key });
+    const response = await tvly.search("what do you think baout india");
+
+    console.log(response);
+}
+httpServer.listen(3000, () => {
     console.log('server is runnign ');
-    
+    call()
 })
