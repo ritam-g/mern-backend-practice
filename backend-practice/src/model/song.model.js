@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const songSchema = new mongoose.Schema({
     url: {
@@ -17,4 +17,4 @@ const songSchema = new mongoose.Schema({
         default: 'happy'
     }
 })
-module.exports=mongoose.model('song',songSchema)
+export default mongoose.model('song', songSchema);

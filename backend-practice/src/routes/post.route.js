@@ -1,13 +1,13 @@
-const express = require('express');
-const authMiddleware = require('../middleware/auth.middleware');
-const multer=require("multer");
-const { postController } = require('../controller/post.controller');
+import express from 'express';
+import authMiddleware from '../middleware/auth.middleware.js';
+import multer from "multer";
+import { postController } from '../controller/post.controller.js';
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-const postRoute=express.Router()
+const postRoute = express.Router()
 
-postRoute.post("/post",upload.single('img'),authMiddleware,postController)
+postRoute.post("/post", upload.single('img'), authMiddleware, postController)
 
-module.exports=postRoute
+export default postRoute;

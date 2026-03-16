@@ -1,6 +1,6 @@
-const ImageKit = require('@imagekit/nodejs');
-const userModel = require('../model/user.model');
-const postModel = require('../model/post.model');
+import ImageKit from '@imagekit/nodejs';
+import userModel from '../model/user.model.js';
+import postModel from '../model/post.model.js';
 
 const imagekit = new ImageKit({
    publicKey: process.env.IMAGE_KIT_PUBLIC_KEY,
@@ -53,4 +53,4 @@ async function postController(req, res) {
    }
 }
 
-module.exports = { postController };
+export { postController };

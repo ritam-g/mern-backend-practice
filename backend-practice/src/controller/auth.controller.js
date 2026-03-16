@@ -1,9 +1,9 @@
-const userModel = require("../model/user.model");
-const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
-const redis = require("../config/cache");
+import userModel from "../model/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+import redis from "../config/cache.js";
 /**
- * @access evryone
+ * @access evryone 
  * 
  */
 async function registerController(req, res) {
@@ -64,14 +64,14 @@ async function loginController(req, res) {
             })
         }
         //NOTE - password verificaiton
-        
+
         const match = await bcrypt.compare(password, user.password)
         if (!match) {
             return res.status(401).json({
                 message: 'invalid input'
             })
         }
-        
+
         //NOTE - token created
         const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY)
         res.cookie('token', token)
@@ -109,7 +109,7 @@ async function logoutController(req, res) {
  */
 async function getMeController(req, res) {
     try {
-        const {id} = req.user
+        const { id } = req.user
         const user = await userModel.findById(id)
         if (!user) {
             return res.status(401).json({
@@ -127,4 +127,4 @@ async function getMeController(req, res) {
         })
     }
 }
-module.exports = {getMeController, logoutController, registerController, loginController };
+export { getMeController, logoutController, registerController, loginController };

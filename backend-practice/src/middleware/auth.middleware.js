@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const redis = require('../config/cache');
+import jwt from 'jsonwebtoken';
+import redis from '../config/cache.js';
 async function authMiddleware(req, res, next) {
     const token = req.cookies.token
     try {
@@ -22,4 +22,4 @@ async function authMiddleware(req, res, next) {
 
     }
 }
-module.exports = authMiddleware
+export default authMiddleware;

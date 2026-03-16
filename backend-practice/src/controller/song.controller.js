@@ -1,6 +1,6 @@
-const id3 = require("node-id3")
-const { uplodeFIle } = require("../services/imgekit.service")
-const songModel = require("../model/song.model")
+import id3 from "node-id3";
+import { uplodeFIle } from "../services/imgekit.service.js";
+import songModel from "../model/song.model.js";
 async function songUpload(req, res) {
     try {
         const songBuffer = req.file.buffer
@@ -30,4 +30,4 @@ async function songUpload(req, res) {
     }
 }
 
-module.exports = { songUpload }
+export { songUpload };
