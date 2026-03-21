@@ -11,7 +11,7 @@ initSocket(httpServer)
 async function call() {
     await connectToDB()
 
-    ChatWithAi()
+    // ChatWithAi()
 }
 httpServer.listen(3000, () => {
     console.log('server is runnign ');
