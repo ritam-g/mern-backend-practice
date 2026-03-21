@@ -30,34 +30,40 @@ export function initSocket(httpServer) {
 
     // Am I sending data continuously or only once? (important)
     io.on("connection", (socket) => {
-        console.log("User connected:", socket.id);
 
-        // ✅ Step 1: Listen from frontend
-        socket.on("ask", async (data) => {
-            console.log("User asked:", data);
+    // ✅ This runs when a user connects
+    console.log("User connected:", socket.id);
 
-            const text = "Hello this is from backend socket server to frontend";
+    // ✅ "ack" = event name coming from frontend
+    // 👉 Frontend MUST call: socket.emit("ack")
+    socket.on("ack", async () => {
 
-            // ✅ Step 2: stream response character by character
-            for (let char of text) {
-                socket.emit("stream", char);
+        // ✅ This is the message you want to stream
+        let text = "hello world from server socket"; 
 
-                // typing delay
-                await new Promise((resolve) => setTimeout(resolve, 30));
-            }
+        // ✅ Loop through each character
+        for (let char of text) {
 
-            // ✅ Step 3: tell frontend streaming is finished
-            socket.emit("done");
-        });
+            // ✅ Send each character to frontend
+            socket.emit("stream", char);
 
-        socket.on("disconnect", () => {
-            console.log("User disconnected:", socket.id);
-        });
+            // ✅ Delay for typing effect
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        // ✅ Tell frontend streaming is finished
+        socket.emit("done");
     });
 
+    // ✅ When user disconnects
+    socket.on("disconnect", () => {
+        console.log("user disconnected:", socket.id);
+    });
+
+});
 }
 
 
-export function getIO() {
-    return io
-}
+    export function getIO() {
+        return io
+    }
