@@ -2,6 +2,7 @@ import userModel from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 import redis from "../config/cache.js";
+import AppError from "../utils/AppError.js";
 /**
  * @access evryone 
  * 
@@ -51,7 +52,7 @@ async function registerController(req, res) {
  * 
  * 
  */
-async function loginController(req, res) {
+async function loginController(req, res, next) {
     try {
         const { email, username, password } = req.body;
         const user = await userModel.findOne({
@@ -59,17 +60,14 @@ async function loginController(req, res) {
         }).select("+password")
 
         if (!user) {
-            return res.status(401).json({
-                message: 'unathorize user'
-            })
+            throw new AppError("user is not found", 404);
+
         }
         //NOTE - password verificaiton
 
         const match = await bcrypt.compare(password, user.password)
         if (!match) {
-            return res.status(401).json({
-                message: 'invalid input'
-            })
+            throw new AppError("Invalid credentials", 401);
         }
 
         //NOTE - token created
@@ -79,12 +77,7 @@ async function loginController(req, res) {
             message: 'loing in sucess',
         })
     } catch (err) {
-        console.log(err);
-        if (!user) {
-            return res.status(401).json({
-                message: 'something went worng '
-            })
-        }
+        next(err)
     }
 }
 /**

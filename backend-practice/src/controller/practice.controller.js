@@ -2,7 +2,7 @@ async function practiceConteroller(req, res, next) {
     try {
         const { name } = req.body
         if (!name) {
-            throw new Error("name is requried");
+            throw new Error("name is requried", 400);
 
         }
         return res.status(200).json({

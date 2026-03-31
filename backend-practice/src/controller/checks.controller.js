@@ -3,7 +3,7 @@ async function testingError(req, res, next) {
     try {
         const { nums } = req.body
         if (nums > 5) {
-            throw new Error("it should be less than 5");
+            throw new Error("it should be less than 5", 400);
 
         }
     } catch (err) {

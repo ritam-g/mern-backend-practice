@@ -1,6 +1,7 @@
 import ImageKit from '@imagekit/nodejs';
 import userModel from '../model/user.model.js';
 import postModel from '../model/post.model.js';
+import AppError from '../utils/AppError.js';
 
 const imagekit = new ImageKit({
    publicKey: process.env.IMAGE_KIT_PUBLIC_KEY,
@@ -8,22 +9,22 @@ const imagekit = new ImageKit({
    urlEndpoint: process.env.IMAGE_KIT_URL_ENDPOINT
 });
 
-async function postController(req, res) {
+async function postController(req, res, next) {
    try {
       const { id } = req.user || {};
       const { desc } = req.body;
 
       if (!id) {
-         return res.status(401).json({ message: "Unauthorized: Missing user token data" });
+         new AppError("Unauthorized: User not found", 401);
       }
 
       const user = await userModel.findById(id);
       if (!user) {
-         return res.status(401).json({ message: "Unauthorized: User not found" });
+         new AppError("Unauthorized: User not found", 401);
       }
 
       if (!req.file) {
-         return res.status(400).json({ message: "Image is required" });
+         new AppError("Image is required", 400);
       }
 
       let file = null;
@@ -35,7 +36,7 @@ async function postController(req, res) {
          });
       } catch (uploadErr) {
          console.error("ImageKit Error:", uploadErr);
-         return res.status(500).json({ message: "Failed to upload image" });
+         new AppError("Error uploading image to ImageKit", 500);
       }
       const post = await postModel.create({
          desc,
@@ -49,7 +50,7 @@ async function postController(req, res) {
       });
    } catch (err) {
       console.error("Post creation error:", err);
-      return res.status(500).json({ message: "Something went wrong while creating post" });
+      next(err)
    }
 }
 

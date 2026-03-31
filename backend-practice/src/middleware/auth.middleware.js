@@ -1,24 +1,24 @@
 import jwt from 'jsonwebtoken';
 import redis from '../config/cache.js';
+import AppError from '../utils/AppError.js';
+import app from '../app.js';
 async function authMiddleware(req, res, next) {
     const token = req.cookies.token
     try {
-
+        if (!token) {
+           throw new AppError("envalid token", 401)
+        }
         //NOTE - check token is black list or not 
         const blackList = await redis.get(token)
         if (blackList) {
-            return res.status(401).json({
-                message: "envalid token"
-            })
+           throw new AppError("envalid token", 401)
         }//id: user._id, email: user.email 
         const decode = jwt.verify(token, process.env.SECRET_KEY)
         req.user = decode
         next()
     } catch (err) {
         console.log(err);
-        return res.status(404).json({
-            mesagge: "something went wrong "
-        })
+        next(err)
 
     }
 }
